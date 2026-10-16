@@ -1,0 +1,139 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/main/schema/formalization.schema.json
+version: "v0.4"
+
+project:
+  name: "Graphic sequences: the Erdős–Gallai and Havel–Hakimi theorems"
+  description: >-
+    A Lean 4 / Mathlib formalization of the two classical characterizations of degree sequences
+    of finite simple graphs: the Erdős–Gallai theorem (a non-increasing sequence is graphic if and
+    only if its sum is even and every initial segment satisfies the Erdős–Gallai inequality) and
+    the Havel–Hakimi theorem (a non-increasing sequence is graphic if and only if its first term
+    is at most the number of remaining terms, the next d₀ terms are positive, and the reduced
+    sequence is graphic).
+  authors:
+    - "Juan Pablo Traverso Gianini"
+  license: "Apache-2.0"
+  responsible_maintainers:
+    - "Juan Pablo Traverso Gianini"
+
+classification:
+  arxiv: ["math.CO"]
+  msc2020: ["05C07"]
+
+sources:
+  - title: "Gráfok előírt fokú pontokkal (Graphs with prescribed degrees of vertices)"
+    authors:
+      - "P. Erdős"
+      - "T. Gallai"
+    type: "paper"
+    location: "Matematikai Lapok 11 (1960), 264–274"
+    relationship: "formalizes"
+    note: "The Erdős–Gallai characterization of graphic sequences; no DOI. The formal proof of sufficiency follows Choudum (1986)."
+    license: "unknown"
+    author_endorsement: "n/a"
+  - title: "A remark on the existence of finite graphs"
+    authors:
+      - "Václav Havel"
+    id: "doi:10.21136/CPM.1955.108220"
+    type: "paper"
+    location: "Časopis pro pěstování matematiky 80 (1955), 477–480"
+    relationship: "formalizes"
+    note: "The Havel–Hakimi reduction criterion."
+    license: "unknown"
+    author_endorsement: "n/a"
+  - title: "On realizability of a set of integers as degrees of the vertices of a linear graph. I"
+    authors:
+      - "S. L. Hakimi"
+    id: "doi:10.1137/0110037"
+    type: "paper"
+    location: "Journal of the Society for Industrial and Applied Mathematics 10 (1962), 496–506"
+    relationship: "formalizes"
+    note: "Independent proof of the reduction criterion."
+    license: "unknown"
+    author_endorsement: "n/a"
+  - title: "A simple proof of the Erdős–Gallai theorem on graph sequences"
+    authors:
+      - "S. A. Choudum"
+    id: "doi:10.1017/S0004972700002872"
+    type: "paper"
+    location: "Bulletin of the Australian Mathematical Society 33 (1986), 67–70"
+    relationship: "background"
+    note: "The induction followed for the sufficiency direction of the Erdős–Gallai theorem."
+    license: "unknown"
+    author_endorsement: "n/a"
+
+status:
+  scope: >-
+    Proved for every length n and every non-increasing sequence of natural numbers; graphic means
+    realizable by a simple graph on Fin n with Mathlib's `degree`.
+  sorry_count: 0
+  sorry_in_definitions: 0
+  axioms: []
+
+automation:
+  methods:
+    - method: "autonomous"
+      models: ["Aristotle (Harmonic)"]
+      framework: "Aristotle CLI"
+      tool_setup: >-
+        Produced the proofs in one run from the formal statements and proof plans; the return was
+        audited (statements and headers unchanged, no added axioms) and rebuilt locally.
+      cost:
+        wall_time: "under one hour"
+        spend_usd: "not tracked"
+        hardware: "API-only"
+      prompting_notes: "Formal statements and proof plans supplied."
+    - method: "agent"
+      models: ["Claude Opus 5.5"]
+      framework: "Claude Code (Anthropic)"
+      tool_setup: >-
+        Statement design (including the positivity condition needed for the truncated Havel–Hakimi
+        reduction), proof plans, integration and review of the Aristotle return, and the Palomar
+        packaging, checked with `lake build` and `#print axioms` (Lean v4.35.0-rc3, Mathlib
+        c55e6e786f49471c72fbddbec5415808896aec1e).
+      cost:
+        wall_time: "about one hour"
+        spend_usd: "subscription-based"
+        hardware: "local machine"
+      prompting_notes: "Natural-language instructions in Spanish, directed by the author."
+  spend_usd: "subscription-based"
+  notes: >-
+    The results were chosen by the human author; the Lean proofs are AI-generated and
+    mechanically verified (no `sorry`, axioms limited to propext, Classical.choice and Quot.sound,
+    identical elaborated types for the Challenge/Solution pair).
+
+fidelity:
+  divergences: >-
+    Sequences are maps Fin n → ℕ, non-increasing (`Antitone`). The Havel–Hakimi reduction uses
+    truncated subtraction, so the statement adds the condition that d₁, …, d_{d₀} are positive
+    (without it the truncation could produce a graphic sequence from a non-graphic one, e.g.
+    d = (1, 0)); the reduced sequence need not be sorted, which does not affect graphicness.
+
+review:
+  status: "agent-reviewed"
+  reviewers:
+    - "Claude Opus 5.5 (AI agent in Claude Code, acting for the author)"
+  notes: >-
+    Agent review by Claude Opus 5.5, distinct from the mechanical verification: the agent
+    compared the statements with the Erdős–Gallai and Havel–Hakimi theorems (and found and fixed
+    a counterexample to a first draft of the Havel–Hakimi statement), checked that the Aristotle
+    return left every statement and header unchanged, and confirmed by `lake build`,
+    `#print axioms` and a comparison of the fully elaborated Challenge and Solution types that the
+    proofs use no `sorry` and only propext, Classical.choice and Quot.sound. The author directed
+    the work and approved the statements. No independent human mathematical review has been
+    performed. The results are classical; no mathematical novelty is claimed.
+
+alignment:
+  namespace: "GraphicSequences"
+  statements:
+    - source: "Erdős–Gallai (1960)"
+      lean: "GraphicSequences.isGraphic_iff_erdos_gallai"
+      module: "Challenge"
+      status: "proved"
+    - source: "Havel (1955), Hakimi (1962)"
+      lean: "GraphicSequences.isGraphic_iff_havel_hakimi"
+      module: "Challenge"
+      status: "proved"
+
+acknowledgements: >-
+  Mathlib and the Lean community; Harmonic's Aristotle.
